@@ -43,6 +43,8 @@ Refer to "serverless.yml"
 ![Alt text](screenshots/screenshot07.png?raw=false "ray_tracing")
 <br><br>
 ![Alt text](screenshots/screenshot08.png?raw=false "logs")
+<br><br>
+![Alt text](screenshots/screenshot12.png?raw=false "logs")
 
 >HTTP requests are validated
 
