@@ -1,6 +1,9 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb'
 import AWSXRay from 'aws-xray-sdk-core'
+import { createLogger } from '../utils/logger.mjs'
+
+const log = createLogger("TodoAccess")
 
 export class TodosAccess {
   constructor(
@@ -12,16 +15,31 @@ export class TodosAccess {
     this.dynamoDbClient = DynamoDBDocument.from(this.documentClient)
   }
 
-  async getTodos() {
-    console.log('Getting all todos')
-
-    const result = await this.dynamoDbClient.scan({
-      TableName: this.todosTable
-    })
+  async getTodos(userId) {
+    log.info('Getting all todos', userId)
+    
+    const result = await this.dynamoDbClient.query({
+      TableName: this.todosTable,
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId
+      },
+      })
     return result.Items
   }
 
   async createTodo(todo) {
+    log.info(`Creating a group with id ${todo.todoId}`)
+
+    await this.dynamoDbClient.put({
+      TableName: this.todosTable,
+      Item: todo
+    })
+
+    return todo
+  }
+
+  async updateTodo(userId, todoId, updateData) {
     console.log(`Creating a group with id ${todo.todoId}`)
 
     await this.dynamoDbClient.put({
