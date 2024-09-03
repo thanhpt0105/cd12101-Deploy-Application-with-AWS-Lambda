@@ -22,7 +22,7 @@ export class TodosAccess {
   }
 
   async getTodos(userId) {
-    log.info('Getting all todos', userId)
+    log.info(`Getting all todos of ${userId}`)
     
     const result = await this.dynamoDbClient.query({
       TableName: this.todosTable,
@@ -46,14 +46,36 @@ export class TodosAccess {
   }
 
   async updateTodo(userId, todoId, updateData) {
-    console.log(`Creating a group with id ${todo.todoId}`)
+    console.log(`Updating a group with id ${todoId}`)
 
-    await this.dynamoDbClient.put({
-      TableName: this.todosTable,
-      Item: todo
+    const updasteResult = await this.dynamoDbClient.update({
+      TableName: this.todosTable, 
+      Key: { userId, todoId}, 
+      UpdateExpression: 'set #name = :name, #done = :done, #dueDate = :dueDate',
+      ExpressionAttributeNames: {
+        '#name': 'name',
+        '#done': 'done',
+        '#dueDate': 'dueDate',
+      },
+      ExpressionAttributeValues: {
+        ':name': updateData.name,
+        ':done': updateData.done,
+        ':dueDate': updateData.dueDate,
+      },
     })
+    
+    console.log(`Updated data: ${updasteResult.Item}`)
+  }
 
-    return todo
+  async deleteTodo(userId, todoId) {
+    console.log(`Deleting a group with id ${todoId}`)
+
+    const updasteResult = await this.dynamoDbClient.delete({
+      TableName: this.todosTable, 
+      Key: { userId, todoId},       
+    })
+    
+    console.log(`Updated data: ${updasteResult.Item}`)
   }
 
   async generateUploadUrl(userId, todoId, attachmentId) {
