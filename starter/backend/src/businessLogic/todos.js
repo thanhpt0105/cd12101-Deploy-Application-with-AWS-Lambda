@@ -39,3 +39,13 @@ export async function updateTodo(userId, todoId, updateData) {
     await todosAccess.updateTodo(userId, todoId, updateData)
     return true
 }
+
+export async function generateUploadUrl(userId, todoId) {
+    if (!userId) {
+        log.info("Unauthorized!")
+        return false
+    }
+    const attachmentId = uuid.v4()
+    const url = await todosAccess.generateUploadUrl(userId, todoId, attachmentId)
+    return url
+}
